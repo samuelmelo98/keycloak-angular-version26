@@ -3,9 +3,10 @@ import Keycloak from 'keycloak-js';
 export class KeycloakService {
 
   private static keycloak: Keycloak;
+    private static refreshInterval: any;
 
 
-  static init(): Promise<boolean> {
+   static init(): Promise<boolean> {
     if (!this.keycloak) {
       this.keycloak = new Keycloak({
         url: 'https://auth.stringtecnologiadf.org',
@@ -20,6 +21,11 @@ export class KeycloakService {
       silentCheckSsoRedirectUri:
         window.location.origin + '/assets/silent-check-sso.html',
       checkLoginIframe: false
+    }).then(authenticated => {
+      if (authenticated) {
+        this.startTokenRefresh();
+      }
+      return authenticated;
     });
   }
 
@@ -57,4 +63,33 @@ export class KeycloakService {
         name: token.name
       };
     }
+
+    private static stopTokenRefresh() {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+      this.refreshInterval = null;
+    }
+  }
+
+    private static startTokenRefresh() {
+    // Limpa se já existir
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
+
+    this.refreshInterval = setInterval(() => {
+      this.keycloak.updateToken(30) // tenta renovar se faltar < 30s
+        .then(refreshed => {
+          if (refreshed) {
+            console.log('🔄 Token renovado');
+          }
+        })
+        .catch(() => {
+          console.warn('❌ Token expirado. Redirecionando para login...');
+          this.stopTokenRefresh();
+          this.login();
+        });
+    }, 10_000); // verifica a cada 10s
+  }
+
 }
