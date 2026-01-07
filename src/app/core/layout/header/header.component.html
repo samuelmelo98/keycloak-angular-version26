@@ -1,0 +1,16 @@
+<header class="header">
+  <h2>Frontend Angular</h2>
+
+  <div class="user-area" *ngIf="user; else loggedOut">
+    <div class="user-info">
+      <strong>{{ user.name }}</strong>
+      <small>{{ user.email }}</small>
+    </div>
+    <button (click)="logout()">Logout</button>
+  </div>
+
+  <ng-template #loggedOut>
+    <button (click)="login()">Login</button>
+  </ng-template>
+</header>
+
