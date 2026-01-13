@@ -1,16 +1,16 @@
-<header class="header">
-  <h2>Frontend Angular</h2>
+<header class="h-14 bg-gov-primary text-white flex items-center px-4 shadow">
 
-  <div class="user-area" *ngIf="user; else loggedOut">
-    <div class="user-info">
-      <strong>{{ user.name }}</strong>
-      <small>{{ user.email }}</small>
-    </div>
-    <button (click)="logout()">Logout</button>
-  </div>
 
-  <ng-template #loggedOut>
-    <button (click)="login()">Login</button>
-  </ng-template>
+  <button
+    (click)="toggleMenu.emit()"
+    class="text-2xl mr-4 hover:text-blue-400 transition"
+  >
+    <span *ngIf="!menuOpen">☰</span>
+    <span *ngIf="menuOpen">✖</span>
+  </button>
+
+  <h1 class="text-lg font-semibold">
+    Minha Aplicação
+  </h1>
+
 </header>
-

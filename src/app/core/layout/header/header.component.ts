@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter,Input,Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { KeycloakService } from '../../auth/keycloak.service';
 import { Router } from '@angular/router';
@@ -12,7 +12,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-
+@Input() menuOpen = true;
+@Output() toggleMenu = new EventEmitter<void>();
   constructor(private router: Router) {}
 
   user: {
@@ -35,5 +36,7 @@ export class HeaderComponent implements OnInit {
   logout() {
     KeycloakService.logout();
   }
+
+
 
 }
