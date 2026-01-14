@@ -1,33 +1,35 @@
-import Keycloak from 'keycloak-js';
+import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
+import { environment } from '../../../environments/environment';
 
 export class KeycloakService {
 
   private static keycloak: Keycloak;
-    private static refreshInterval: any;
+  private static refreshInterval: ReturnType<typeof setInterval> | null = null;
 
 
    static init(): Promise<boolean> {
     if (!this.keycloak) {
       this.keycloak = new Keycloak({
-        url: 'https://auth.stringtecnologiadf.org',
-        realm: 'stringtecnologia',
-        clientId: 'frontend-spa'
+        url: environment.keycloak.url,
+        realm: environment.keycloak.realm,
+        clientId: environment.keycloak.clientId
       });
     }
 
-    return this.keycloak.init({
-      onLoad: 'check-sso',
-      pkceMethod: 'S256',
+      const initOptions: KeycloakInitOptions = {
+      ...environment.keycloak.initOptions,
       silentCheckSsoRedirectUri:
-        window.location.origin + '/assets/silent-check-sso.html',
-      checkLoginIframe: false
-    }).then(authenticated => {
+        window.location.origin + '/assets/silent-check-sso.html'
+    };
+
+    return this.keycloak.init(initOptions).then(authenticated => {
       if (authenticated) {
         this.startTokenRefresh();
       }
       return authenticated;
     });
   }
+  
 
   static login() {
     if (!this.keycloak) {
